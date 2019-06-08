@@ -1,0 +1,126 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+
+namespace WeiboLotteryMachine.Win
+{
+    public partial class MainFormView : Form
+    {
+        Model.User User { get; set; }
+        public MainFormView()
+        {
+            InitializeComponent();
+            this.Text = "微博抽奖机 v" + SoftwareInfo.Version; 
+        }
+
+        #region [信息输出]
+        /// <summary>
+        /// 向状态窗口输出一组信息
+        /// </summary>
+        /// <param name="messages"></param>
+        private void WriteOutputMessages(string[] messages)
+        {
+            string timeStr = DateTime.Now.ToString();
+
+            this.richTextBoxOutput.Text += timeStr + ":" + System.Environment.NewLine;
+
+            foreach (string str in messages)
+            {
+                this.richTextBoxOutput.AppendText(str + Environment.NewLine);
+            }
+            this.richTextBoxOutput.ScrollToCaret();
+        }
+        /// <summary>
+        /// 向状态窗口输出一条信息
+        /// </summary>
+        /// <param name="message"></param>
+        private void WriteOutputMessage(string message)
+        {
+            this.WriteOutputMessages(new string[] { message });
+        }
+        #endregion
+
+        #region [窗口事件]
+        //登录成功
+        private void LoginSuccessful(Model.User user)
+        {
+            this.pictureBoxHeader.Image = user.HeaderPicture;
+            this.labelNickName.Text = user.NickName;
+            this.WriteOutputMessage("登录成功");
+            this.buttonLogin.Enabled = false;
+            this.buttonStop.Enabled = true;
+        }
+
+        //登录并开始转发
+        private void buttonLogin_Click(object sender, EventArgs e)
+        {
+            Model.User user = BLL.Login.PrepareLogin(this.textBoxUsername.Text, this.textBoxPassword.Text);
+            string result = BLL.Login.StartLogin(user);
+            if (result.Equals("0"))
+            {
+                if (user.NickName == null)
+                {
+                    this.WriteOutputMessage("账号信息获取失败");
+                }
+                else if (user.NickName.IndexOf("请先验证身份") > -1)
+                {
+                    this.WriteOutputMessage("账号被锁，需解锁后才能继续登录");
+                    MessageBox.Show("账号被锁，需解锁后才能继续登录","提示");
+                }
+                else
+                {
+                    this.LoginSuccessful(user);
+                }
+            }
+            else if (result.Equals("2070") || result.Equals("4096") || result.Equals("4049"))
+            {
+                while (result.Equals(""))
+                {
+                    CheckCodeView checkCodeView = new CheckCodeView(BLL.Login.GetCodeImage(user));
+                    checkCodeView.ShowDialog();
+                    if (checkCodeView.Code.Equals(""))
+                    {
+                        this.WriteOutputMessage("退出登录");
+                        return;
+                    }
+                    else
+                    {
+                        result = BLL.Login.StartLogin(user, checkCodeView.Code);
+                    }
+                }
+                this.LoginSuccessful(user);
+            }
+            else if (result.Equals("101&"))
+            {
+                //密码错误
+                this.WriteOutputMessage("登录失败，账号或密码错误");
+                MessageBox.Show("账号或密码错误！", "提示");
+            }
+            else
+            {
+                this.WriteOutputMessage("登录失败，未知错误信息");
+                MessageBox.Show("未知错误！请关闭登录保护后重试！", "提示");
+            }
+        }
+
+        //停止转发
+        private void buttonStop_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox_TextChanged(object sender, EventArgs e)
+        {
+            if (!this.textBoxPassword.Text.Equals("") && !this.textBoxUsername.Text.Equals(""))
+            {
+                this.buttonLogin.Enabled = true;
+            }
+        }
+        #endregion
+    }
+}
