@@ -48,12 +48,13 @@ namespace WeiboLotteryMachine.Win
                     //    BLL.Lottery.Follow(this.User.Cookies, user.Uid, user.NickName);
                     //}
                     //评论
-                    BLL.Lottery.Comment(this.User.Cookies, lotteryWeibo.Mid, this.User.Uid, lotteryWeibo.OwnerUser.Uid, "吸欧气，请抽我！");
+                    //BLL.Lottery.Comment(this.User.Cookies, lotteryWeibo.Mid, this.User.Uid, lotteryWeibo.OwnerUser.Uid, "吸欧气，请抽我！");
                     //转发
-                    BLL.Lottery.Forward(this.User.Cookies, lotteryWeibo.Mid);
+                    BLL.Lottery.Forward(this.User.Cookies, lotteryWeibo.Mid, this.User.Uid);
 
                     //记录数据
                     this.WriteOutputMessage("转发成功，被转用户：@" + lotteryWeibo.OwnerUser.NickName);
+                    break;
                 }
             }
             else
@@ -94,6 +95,8 @@ namespace WeiboLotteryMachine.Win
         //登录成功
         private void LoginSuccessful(Model.User user)
         {
+            this.User = user;
+
             this.pictureBoxHeader.Image = user.HeaderPicture;
             this.groupBoxSet.Text = user.NickName;
             this.WriteOutputMessage("登录成功");

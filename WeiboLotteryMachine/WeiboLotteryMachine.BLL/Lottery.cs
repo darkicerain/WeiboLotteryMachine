@@ -95,9 +95,11 @@ namespace WeiboLotteryMachine.BLL
         /// <summary>
         /// 转发
         /// </summary>
-        public static void Forward(CookieContainer cookie ,string mid)
+        public static void Forward(CookieContainer cookie ,string mid,string uid, string comment = "")
         {
-
+            string data = String.Format("pic_src=&pic_id=&appkey=&mid={0}&style_type=1&mark=&reason={1}&from_plugin=0&location=v6_content_home&pdetail=&module=&page_module_id=&refer_sort=&is_comment_base=1&rank=0&rankid=&group_source=group_all&rid=3_0_8_2669529346570161066_0_0_0&isReEdit=false&_t=0",mid,comment);
+            string url = String.Format(@"https://weibo.com/aj/v6/mblog/forward?ajwvr=6&domain={0}&__rnd={1}", uid, GetTimeStamp());
+            HttpHelper.SendDataByPost(url, cookie, data);
         }
 
         /// <summary>
