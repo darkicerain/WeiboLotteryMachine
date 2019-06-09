@@ -41,8 +41,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LotteryWeibo.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WeiboLotteryMachine.DAL\WeiboLotteryMachine.DAL.csproj">
+      <Project>{DC8223DF-FC31-4B9C-AD67-26B1CAE052FD}</Project>
+      <Name>WeiboLotteryMachine.DAL</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

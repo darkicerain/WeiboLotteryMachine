@@ -12,11 +12,49 @@ namespace WeiboLotteryMachine.Win
     public partial class MainFormView : Form
     {
         Model.User User { get; set; }
+        Timer ForwardTimer = new Timer() { Interval = 10000 }; //默认10分钟
         public MainFormView()
         {
             InitializeComponent();
-            this.Text = "微博抽奖机 v" + SoftwareInfo.Version; 
         }
+
+        private void MainFormView_Load(object sender, EventArgs e)
+        {
+            this.Text = "微博抽奖机 v" + SoftwareInfo.Version;
+            this.ForwardTimer.Tick += ForwardTimer_Tick;
+        }
+
+        #region [运行相关]
+        private void ForwardTimer_Tick(object sender, EventArgs e)
+        {
+            //TODO 获取转发列表
+            List<Model.LotteryWeibo> weibos = BLL.Lottery.GetLotteryList();
+
+            if (weibos.Count != 0)
+            {
+                Model.LotteryWeibo lotteryWeibo = weibos[0];
+                //点赞
+                BLL.Lottery.Like(this.User.Cookies, lotteryWeibo.Mid);
+                //关注
+                BLL.Lottery.Follow(this.User.Cookies, lotteryWeibo.OwnerUser.Uid, lotteryWeibo.OwnerUser.NickName);
+                foreach (Model.LotteryUser user in lotteryWeibo.LinkedUsers)
+                {
+                    BLL.Lottery.Follow(this.User.Cookies, user.Uid, user.NickName);
+                }
+                //评论
+                BLL.Lottery.Comment(this.User.Cookies, lotteryWeibo.Mid, this.User.Uid, lotteryWeibo.OwnerUser.Uid, "吸欧气，请抽我！");
+                //转发
+                BLL.Lottery.Forward(this.User.Cookies, lotteryWeibo.Mid);
+
+                //记录数据
+                this.WriteOutputMessage("抓发成功，被转用户：@" + lotteryWeibo.OwnerUser.NickName);
+            }
+            else
+            {
+                this.WriteOutputMessage("获取转发列表失败");
+            }
+        }
+        #endregion
 
         #region [信息输出]
         /// <summary>
@@ -50,10 +88,15 @@ namespace WeiboLotteryMachine.Win
         private void LoginSuccessful(Model.User user)
         {
             this.pictureBoxHeader.Image = user.HeaderPicture;
-            this.labelNickName.Text = user.NickName;
+            this.groupBoxSet.Text = user.NickName;
             this.WriteOutputMessage("登录成功");
             this.buttonLogin.Enabled = false;
-            this.buttonStop.Enabled = true;
+            this.buttonStop.Enabled = false;
+            this.buttonStart.Enabled = true;
+            this.textBoxInterval.Enabled = true;
+
+            this.textBoxUsername.Enabled = false;
+            this.textBoxPassword.Enabled = false;
         }
 
         //登录并开始转发
@@ -108,18 +151,33 @@ namespace WeiboLotteryMachine.Win
             }
         }
 
-        //停止转发
-        private void buttonStop_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void textBox_TextChanged(object sender, EventArgs e)
         {
             if (!this.textBoxPassword.Text.Equals("") && !this.textBoxUsername.Text.Equals(""))
             {
                 this.buttonLogin.Enabled = true;
             }
+        }
+
+        //停止转发
+        private void buttonStop_Click(object sender, EventArgs e)
+        {
+            this.buttonStart.Enabled = true;
+            this.buttonStop.Enabled = false;
+            this.textBoxInterval.Enabled = true;
+
+            this.ForwardTimer.Enabled = false;
+        }
+
+        //开始转发
+        private void buttonStart_Click(object sender, EventArgs e)
+        {
+            this.buttonStart.Enabled = false;
+            this.buttonStop.Enabled = true;
+            this.textBoxInterval.Enabled = false;
+
+            this.ForwardTimer.Interval = Convert.ToInt32(this.textBoxInterval.Text) * 60000;
+            this.ForwardTimer.Enabled = true;
         }
         #endregion
     }

@@ -30,16 +30,19 @@
         {
             System.Windows.Forms.Label label1;
             System.Windows.Forms.Label label2;
+            System.Windows.Forms.Label labelInterval;
             this.groupBoxSet = new System.Windows.Forms.GroupBox();
+            this.buttonStart = new System.Windows.Forms.Button();
+            this.pictureBoxHeader = new System.Windows.Forms.PictureBox();
             this.buttonStop = new System.Windows.Forms.Button();
             this.buttonLogin = new System.Windows.Forms.Button();
             this.textBoxPassword = new System.Windows.Forms.TextBox();
             this.textBoxUsername = new System.Windows.Forms.TextBox();
             this.richTextBoxOutput = new System.Windows.Forms.RichTextBox();
-            this.pictureBoxHeader = new System.Windows.Forms.PictureBox();
-            this.labelNickName = new System.Windows.Forms.Label();
+            this.textBoxInterval = new System.Windows.Forms.TextBox();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
+            labelInterval = new System.Windows.Forms.Label();
             this.groupBoxSet.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHeader)).BeginInit();
             this.SuspendLayout();
@@ -47,7 +50,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new System.Drawing.Point(86, 50);
+            label1.Location = new System.Drawing.Point(86, 38);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(47, 12);
             label1.TabIndex = 0;
@@ -56,7 +59,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new System.Drawing.Point(92, 81);
+            label2.Location = new System.Drawing.Point(92, 69);
             label2.Name = "label2";
             label2.Size = new System.Drawing.Size(41, 12);
             label2.TabIndex = 1;
@@ -66,7 +69,9 @@
             // 
             this.groupBoxSet.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxSet.Controls.Add(this.labelNickName);
+            this.groupBoxSet.Controls.Add(this.textBoxInterval);
+            this.groupBoxSet.Controls.Add(labelInterval);
+            this.groupBoxSet.Controls.Add(this.buttonStart);
             this.groupBoxSet.Controls.Add(this.pictureBoxHeader);
             this.groupBoxSet.Controls.Add(this.buttonStop);
             this.groupBoxSet.Controls.Add(this.buttonLogin);
@@ -76,10 +81,30 @@
             this.groupBoxSet.Controls.Add(label1);
             this.groupBoxSet.Location = new System.Drawing.Point(13, 13);
             this.groupBoxSet.Name = "groupBoxSet";
-            this.groupBoxSet.Size = new System.Drawing.Size(775, 108);
+            this.groupBoxSet.Size = new System.Drawing.Size(775, 109);
             this.groupBoxSet.TabIndex = 0;
             this.groupBoxSet.TabStop = false;
-            this.groupBoxSet.Text = "设置";
+            this.groupBoxSet.Text = "未登录";
+            // 
+            // buttonStart
+            // 
+            this.buttonStart.Enabled = false;
+            this.buttonStart.Location = new System.Drawing.Point(633, 21);
+            this.buttonStart.Name = "buttonStart";
+            this.buttonStart.Size = new System.Drawing.Size(104, 35);
+            this.buttonStart.TabIndex = 7;
+            this.buttonStart.Text = "开始转发";
+            this.buttonStart.UseVisualStyleBackColor = true;
+            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
+            // 
+            // pictureBoxHeader
+            // 
+            this.pictureBoxHeader.Location = new System.Drawing.Point(12, 25);
+            this.pictureBoxHeader.Name = "pictureBoxHeader";
+            this.pictureBoxHeader.Size = new System.Drawing.Size(70, 70);
+            this.pictureBoxHeader.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxHeader.TabIndex = 6;
+            this.pictureBoxHeader.TabStop = false;
             // 
             // buttonStop
             // 
@@ -95,17 +120,17 @@
             // buttonLogin
             // 
             this.buttonLogin.Enabled = false;
-            this.buttonLogin.Location = new System.Drawing.Point(633, 20);
+            this.buttonLogin.Location = new System.Drawing.Point(245, 35);
             this.buttonLogin.Name = "buttonLogin";
-            this.buttonLogin.Size = new System.Drawing.Size(104, 35);
+            this.buttonLogin.Size = new System.Drawing.Size(62, 52);
             this.buttonLogin.TabIndex = 4;
-            this.buttonLogin.Text = "登录并开始转发";
+            this.buttonLogin.Text = "登录";
             this.buttonLogin.UseVisualStyleBackColor = true;
             this.buttonLogin.Click += new System.EventHandler(this.buttonLogin_Click);
             // 
             // textBoxPassword
             // 
-            this.textBoxPassword.Location = new System.Drawing.Point(139, 78);
+            this.textBoxPassword.Location = new System.Drawing.Point(139, 66);
             this.textBoxPassword.Name = "textBoxPassword";
             this.textBoxPassword.PasswordChar = '*';
             this.textBoxPassword.Size = new System.Drawing.Size(100, 21);
@@ -114,7 +139,7 @@
             // 
             // textBoxUsername
             // 
-            this.textBoxUsername.Location = new System.Drawing.Point(139, 47);
+            this.textBoxUsername.Location = new System.Drawing.Point(139, 35);
             this.textBoxUsername.Name = "textBoxUsername";
             this.textBoxUsername.Size = new System.Drawing.Size(100, 21);
             this.textBoxUsername.TabIndex = 2;
@@ -132,22 +157,23 @@
             this.richTextBoxOutput.TabIndex = 1;
             this.richTextBoxOutput.Text = "";
             // 
-            // pictureBoxHeader
+            // labelInterval
             // 
-            this.pictureBoxHeader.Location = new System.Drawing.Point(12, 25);
-            this.pictureBoxHeader.Name = "pictureBoxHeader";
-            this.pictureBoxHeader.Size = new System.Drawing.Size(70, 70);
-            this.pictureBoxHeader.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxHeader.TabIndex = 6;
-            this.pictureBoxHeader.TabStop = false;
+            labelInterval.AutoSize = true;
+            labelInterval.Location = new System.Drawing.Point(353, 30);
+            labelInterval.Name = "labelInterval";
+            labelInterval.Size = new System.Drawing.Size(65, 12);
+            labelInterval.TabIndex = 8;
+            labelInterval.Text = "时间间隔：";
             // 
-            // labelNickName
+            // textBoxInterval
             // 
-            this.labelNickName.AutoSize = true;
-            this.labelNickName.Location = new System.Drawing.Point(94, 20);
-            this.labelNickName.Name = "labelNickName";
-            this.labelNickName.Size = new System.Drawing.Size(0, 12);
-            this.labelNickName.TabIndex = 7;
+            this.textBoxInterval.Enabled = false;
+            this.textBoxInterval.Location = new System.Drawing.Point(424, 25);
+            this.textBoxInterval.Name = "textBoxInterval";
+            this.textBoxInterval.Size = new System.Drawing.Size(53, 21);
+            this.textBoxInterval.TabIndex = 9;
+            this.textBoxInterval.Text = "30";
             // 
             // MainFormView
             // 
@@ -156,9 +182,12 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.richTextBoxOutput);
             this.Controls.Add(this.groupBoxSet);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "MainFormView";
             this.ShowIcon = false;
             this.Text = "微博抽奖机";
+            this.Load += new System.EventHandler(this.MainFormView_Load);
             this.groupBoxSet.ResumeLayout(false);
             this.groupBoxSet.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHeader)).EndInit();
@@ -174,8 +203,9 @@
         private System.Windows.Forms.TextBox textBoxUsername;
         private System.Windows.Forms.Button buttonStop;
         private System.Windows.Forms.Button buttonLogin;
-        private System.Windows.Forms.Label labelNickName;
         private System.Windows.Forms.PictureBox pictureBoxHeader;
+        private System.Windows.Forms.Button buttonStart;
+        private System.Windows.Forms.TextBox textBoxInterval;
     }
 }
 
