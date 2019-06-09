@@ -32,22 +32,29 @@ namespace WeiboLotteryMachine.Win
 
             if (weibos.Count != 0)
             {
-                Model.LotteryWeibo lotteryWeibo = weibos[0];
-                //点赞
-                BLL.Lottery.Like(this.User.Cookies, lotteryWeibo.Mid);
-                //关注
-                BLL.Lottery.Follow(this.User.Cookies, lotteryWeibo.OwnerUser.Uid, lotteryWeibo.OwnerUser.NickName);
-                foreach (Model.LotteryUser user in lotteryWeibo.LinkedUsers)
+                foreach (Model.LotteryWeibo lotteryWeibo in weibos)
                 {
-                    BLL.Lottery.Follow(this.User.Cookies, user.Uid, user.NickName);
-                }
-                //评论
-                BLL.Lottery.Comment(this.User.Cookies, lotteryWeibo.Mid, this.User.Uid, lotteryWeibo.OwnerUser.Uid, "吸欧气，请抽我！");
-                //转发
-                BLL.Lottery.Forward(this.User.Cookies, lotteryWeibo.Mid);
+                    if (lotteryWeibo.LinkedUsers.Count > 0)
+                    {
+                        continue;
+                    }
+                    //Model.LotteryWeibo lotteryWeibo = weibos[0];
+                    //点赞
+                    BLL.Lottery.Like(this.User.Cookies, lotteryWeibo.Mid);
+                    //关注
+                    BLL.Lottery.Follow(this.User.Cookies, lotteryWeibo.OwnerUser.Uid, lotteryWeibo.OwnerUser.NickName);
+                    //foreach (Model.LotteryUser user in lotteryWeibo.LinkedUsers)
+                    //{
+                    //    BLL.Lottery.Follow(this.User.Cookies, user.Uid, user.NickName);
+                    //}
+                    //评论
+                    BLL.Lottery.Comment(this.User.Cookies, lotteryWeibo.Mid, this.User.Uid, lotteryWeibo.OwnerUser.Uid, "吸欧气，请抽我！");
+                    //转发
+                    BLL.Lottery.Forward(this.User.Cookies, lotteryWeibo.Mid);
 
-                //记录数据
-                this.WriteOutputMessage("抓发成功，被转用户：@" + lotteryWeibo.OwnerUser.NickName);
+                    //记录数据
+                    this.WriteOutputMessage("转发成功，被转用户：@" + lotteryWeibo.OwnerUser.NickName);
+                }
             }
             else
             {

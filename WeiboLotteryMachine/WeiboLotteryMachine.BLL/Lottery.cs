@@ -22,25 +22,26 @@ namespace WeiboLotteryMachine.BLL
 
             if (!result.Equals(""))
             {
-                string regexStr = "<!--card-wrap-->(.)*?<!--/card-wrap-->";
+                string regexStr = "<!--card-wrap-->(.|\n)*?<!--/card-wrap-->";
                 MatchCollection matchCollections = Regex.Matches(result, regexStr);
                 foreach (Match match in matchCollections)
                 {
                     Model.LotteryWeibo lotteryWeibo = new Model.LotteryWeibo();
                     //获取mid
-                    regexStr = @"mid=(\d)*?";
+                    regexStr = "mid=\\\"[0-9]*";
                     Match mid = Regex.Match(match.Value, regexStr);
-                    lotteryWeibo.Mid = mid.Value.Replace("mid=","");
+                    lotteryWeibo.Mid = mid.Value.Replace("mid=\"","");
                     //获取owner
                     lotteryWeibo.OwnerUser = new Model.LotteryUser();
                     regexStr = "nick-name=\\\"(.)*?\\\"";
                     Match name = Regex.Match(match.Value, regexStr);
-                    lotteryWeibo.OwnerUser.NickName = name.Value.Replace("\\\"", "").Replace("nick-namee=", "");
-                    regexStr = @"uid=(\d)*?";
+                    lotteryWeibo.OwnerUser.NickName = name.Value.Replace("\"", "").Replace("nick-name=", "");
+                    regexStr = "uid=[0-9]*";
                     Match uid = Regex.Match(match.Value, regexStr);
                     lotteryWeibo.OwnerUser.Uid = uid.Value.Replace("uid=", "");
                     //获取关联账号列表
-                    regexStr = "<p class=\\\"txt\\\" node(.)*?<///p>";
+                    lotteryWeibo.LinkedUsers = new List<Model.LotteryUser>();
+                    regexStr = "<p class=\\\"txt\\\" node(.|\n)*?</p>";
                     Match mainBody = Regex.Match(match.Value, regexStr);
                     regexStr = "<a(.)*?</a>";
                     MatchCollection users = Regex.Matches(mainBody.Value, regexStr);
@@ -56,7 +57,7 @@ namespace WeiboLotteryMachine.BLL
                         lotteryUser.NickName = nick.Value.Replace("@", "").Replace("</a>", "");
                         regexStr = "href=(.)*? target";
                         Match friendUrl = Regex.Match(user.Value, regexStr);
-                        lotteryUser.Uid = GetUidFromUrl(friendUrl.Value.Replace("href=\\\"", "").Replace("\\\" target", ""));
+                        lotteryUser.Uid = GetUidFromUrl(friendUrl.Value.Replace("href=\"", "").Replace("\" target", ""));
                         lotteryWeibo.LinkedUsers.Add(lotteryUser);
                     }
                     lotteryWeibos.Add(lotteryWeibo);
@@ -132,6 +133,7 @@ namespace WeiboLotteryMachine.BLL
         /// <returns></returns>
         private static string GetUidFromUrl(string url)
         {
+            string result = HttpHelper.Get("http:" + url,true);
             //TODO 获取uid
             return "";
         }
