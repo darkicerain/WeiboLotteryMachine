@@ -13,6 +13,7 @@ namespace WeiboLotteryMachine.Win
     {
         Model.User User { get; set; }
         Timer ForwardTimer = new Timer() { Interval = 10000 }; //默认10分钟
+        Timer UpdateCookieTimer = new Timer() { Interval = 3600000 };   //1小时
         public MainFormView()
         {
             InitializeComponent();
@@ -22,9 +23,45 @@ namespace WeiboLotteryMachine.Win
         {
             this.Text = "微博抽奖机 v" + SoftwareInfo.Version;
             this.ForwardTimer.Tick += ForwardTimer_Tick;
+            this.UpdateCookieTimer.Tick += UpdateCookieTimer_Tick;
 
             BLL.ForwardDb.InitDataBase();
         }
+
+        #region [更新cookie]
+        int updateCount = 0;
+        private void UpdateCookieTimer_Tick(object sender, EventArgs e)
+        {
+            updateCount++;
+            if (updateCount >= 20)
+            {
+                this.UpdateCookie();
+                updateCount = 0;
+            }
+        }
+
+        private void UpdateCookie()
+        {
+            Model.User user = BLL.Login.PrepareLogin(this.textBoxUsername.Text, this.textBoxPassword.Text);
+            string result = BLL.Login.StartLogin(user);
+            if (result.Equals("0"))
+            {
+                this.User = user;
+                this.WriteOutputMessage("更新cookies成功");
+            }
+            else if (result.Equals("2070") || result.Equals("4096") || result.Equals("4049"))
+            {
+                if (this.textBoxUsername.Text.Equals("") || this.textBoxPassword.Text.Equals(""))
+                {
+                    this.WriteOutputMessage("云打码数据为空，无法更新cookies");
+                }
+                else
+                {
+                    //TODO 云打码更新cookies
+                }
+            }
+        }
+        #endregion
 
         #region [运行相关]
         private void ForwardTimer_Tick(object sender, EventArgs e)
@@ -138,7 +175,7 @@ namespace WeiboLotteryMachine.Win
             }
             else if (result.Equals("2070") || result.Equals("4096") || result.Equals("4049"))
             {
-                while (result.Equals(""))
+                do
                 {
                     CheckCodeView checkCodeView = new CheckCodeView(BLL.Login.GetCodeImage(user));
                     checkCodeView.ShowDialog();
@@ -151,8 +188,8 @@ namespace WeiboLotteryMachine.Win
                     {
                         result = BLL.Login.StartLogin(user, checkCodeView.Code);
                     }
-                }
-                this.LoginSuccessful(user);
+                } while (result.Equals(""));
+                    this.LoginSuccessful(user);
             }
             else if (result.Equals("101&"))
             {

@@ -32,6 +32,7 @@
             System.Windows.Forms.Label label2;
             System.Windows.Forms.Label labelInterval;
             this.groupBoxSet = new System.Windows.Forms.GroupBox();
+            this.textBoxInterval = new System.Windows.Forms.TextBox();
             this.buttonStart = new System.Windows.Forms.Button();
             this.pictureBoxHeader = new System.Windows.Forms.PictureBox();
             this.buttonStop = new System.Windows.Forms.Button();
@@ -39,7 +40,9 @@
             this.textBoxPassword = new System.Windows.Forms.TextBox();
             this.textBoxUsername = new System.Windows.Forms.TextBox();
             this.richTextBoxOutput = new System.Windows.Forms.RichTextBox();
-            this.textBoxInterval = new System.Windows.Forms.TextBox();
+            this.textBoxYdmUser = new System.Windows.Forms.TextBox();
+            this.textBoxYdmPassword = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             labelInterval = new System.Windows.Forms.Label();
@@ -65,10 +68,22 @@
             label2.TabIndex = 1;
             label2.Text = "密码：";
             // 
+            // labelInterval
+            // 
+            labelInterval.AutoSize = true;
+            labelInterval.Location = new System.Drawing.Point(332, 38);
+            labelInterval.Name = "labelInterval";
+            labelInterval.Size = new System.Drawing.Size(65, 12);
+            labelInterval.TabIndex = 8;
+            labelInterval.Text = "时间间隔：";
+            // 
             // groupBoxSet
             // 
             this.groupBoxSet.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBoxSet.Controls.Add(this.label3);
+            this.groupBoxSet.Controls.Add(this.textBoxYdmPassword);
+            this.groupBoxSet.Controls.Add(this.textBoxYdmUser);
             this.groupBoxSet.Controls.Add(this.textBoxInterval);
             this.groupBoxSet.Controls.Add(labelInterval);
             this.groupBoxSet.Controls.Add(this.buttonStart);
@@ -85,6 +100,15 @@
             this.groupBoxSet.TabIndex = 0;
             this.groupBoxSet.TabStop = false;
             this.groupBoxSet.Text = "未登录";
+            // 
+            // textBoxInterval
+            // 
+            this.textBoxInterval.Enabled = false;
+            this.textBoxInterval.Location = new System.Drawing.Point(407, 35);
+            this.textBoxInterval.Name = "textBoxInterval";
+            this.textBoxInterval.Size = new System.Drawing.Size(53, 21);
+            this.textBoxInterval.TabIndex = 9;
+            this.textBoxInterval.Text = "30";
             // 
             // buttonStart
             // 
@@ -157,23 +181,29 @@
             this.richTextBoxOutput.TabIndex = 1;
             this.richTextBoxOutput.Text = "";
             // 
-            // labelInterval
+            // textBoxYdmUser
             // 
-            labelInterval.AutoSize = true;
-            labelInterval.Location = new System.Drawing.Point(353, 30);
-            labelInterval.Name = "labelInterval";
-            labelInterval.Size = new System.Drawing.Size(65, 12);
-            labelInterval.TabIndex = 8;
-            labelInterval.Text = "时间间隔：";
+            this.textBoxYdmUser.Location = new System.Drawing.Point(391, 66);
+            this.textBoxYdmUser.Name = "textBoxYdmUser";
+            this.textBoxYdmUser.Size = new System.Drawing.Size(100, 21);
+            this.textBoxYdmUser.TabIndex = 10;
             // 
-            // textBoxInterval
+            // textBoxYdmPassword
             // 
-            this.textBoxInterval.Enabled = false;
-            this.textBoxInterval.Location = new System.Drawing.Point(424, 25);
-            this.textBoxInterval.Name = "textBoxInterval";
-            this.textBoxInterval.Size = new System.Drawing.Size(53, 21);
-            this.textBoxInterval.TabIndex = 9;
-            this.textBoxInterval.Text = "30";
+            this.textBoxYdmPassword.Location = new System.Drawing.Point(497, 66);
+            this.textBoxYdmPassword.Name = "textBoxYdmPassword";
+            this.textBoxYdmPassword.PasswordChar = '*';
+            this.textBoxYdmPassword.Size = new System.Drawing.Size(100, 21);
+            this.textBoxYdmPassword.TabIndex = 11;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(332, 69);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(53, 12);
+            this.label3.TabIndex = 12;
+            this.label3.Text = "云打码：";
             // 
             // MainFormView
             // 
@@ -206,6 +236,9 @@
         private System.Windows.Forms.PictureBox pictureBoxHeader;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.TextBox textBoxInterval;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBoxYdmPassword;
+        private System.Windows.Forms.TextBox textBoxYdmUser;
     }
 }
 
