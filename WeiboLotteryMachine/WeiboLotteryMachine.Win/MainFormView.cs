@@ -22,27 +22,32 @@ namespace WeiboLotteryMachine.Win
         {
             this.Text = "微博抽奖机 v" + SoftwareInfo.Version;
             this.ForwardTimer.Tick += ForwardTimer_Tick;
+
+            BLL.ForwardDb.InitDataBase();
         }
 
         #region [运行相关]
         private void ForwardTimer_Tick(object sender, EventArgs e)
         {
-            //TODO 获取转发列表
             List<Model.LotteryWeibo> weibos = BLL.Lottery.GetLotteryList();
 
             if (weibos.Count != 0)
             {
                 foreach (Model.LotteryWeibo lotteryWeibo in weibos)
                 {
-                    if (lotteryWeibo.LinkedUsers.Count > 0)
+                    //防止重复转发、多人关注要求
+                    if (lotteryWeibo.LinkedUsers.Count > 0 ||
+                        BLL.ForwardDb.IsForwarded(lotteryWeibo.Mid))
                     {
                         continue;
                     }
+
                     //Model.LotteryWeibo lotteryWeibo = weibos[0];
                     //点赞
                     BLL.Lottery.Like(this.User.Cookies, lotteryWeibo.Mid);
                     //关注
                     BLL.Lottery.Follow(this.User.Cookies, lotteryWeibo.OwnerUser.Uid, lotteryWeibo.OwnerUser.NickName);
+                    //TODO 多条件转发
                     //foreach (Model.LotteryUser user in lotteryWeibo.LinkedUsers)
                     //{
                     //    BLL.Lottery.Follow(this.User.Cookies, user.Uid, user.NickName);
@@ -54,6 +59,7 @@ namespace WeiboLotteryMachine.Win
 
                     //记录数据
                     this.WriteOutputMessage("转发成功，被转用户：@" + lotteryWeibo.OwnerUser.NickName);
+                    BLL.ForwardDb.InsertMid(lotteryWeibo.Mid);
                     break;
                 }
             }
