@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using WeiboLotteryMachine.Win.Properties;
 
 namespace WeiboLotteryMachine.Win
 {
@@ -26,6 +27,20 @@ namespace WeiboLotteryMachine.Win
             this.UpdateCookieTimer.Tick += UpdateCookieTimer_Tick;
 
             BLL.ForwardDb.InitDataBase();
+
+            //加载记忆账号
+            if (!String.IsNullOrEmpty(Settings.Default.UserName) &&
+                !String.IsNullOrEmpty(Settings.Default.Password))
+            {
+                this.textBoxUsername.Text = Settings.Default.UserName;
+                this.textBoxPassword.Text = Settings.Default.Password;
+            }
+            if (!String.IsNullOrEmpty(Settings.Default.YunUserName) &&
+                !String.IsNullOrEmpty(Settings.Default.YunPassword))
+            {
+                this.textBoxYdmUser.Text = Settings.Default.YunUserName;
+                this.textBoxYdmPassword.Text = Settings.Default.YunPassword;
+            }
         }
 
         #region [更新cookie]
@@ -150,6 +165,13 @@ namespace WeiboLotteryMachine.Win
 
             this.textBoxUsername.Enabled = false;
             this.textBoxPassword.Enabled = false;
+
+            this.UpdateCookieTimer.Enabled = true;
+
+            //记住账号
+            Settings.Default.UserName = this.textBoxUsername.Text;
+            Settings.Default.Password = this.textBoxPassword.Text;
+            Settings.Default.Save();
         }
 
         //登录并开始转发
@@ -220,6 +242,9 @@ namespace WeiboLotteryMachine.Win
             this.textBoxInterval.Enabled = true;
 
             this.ForwardTimer.Enabled = false;
+
+            this.textBoxYdmUser.Enabled = true;
+            this.textBoxYdmPassword.Enabled = true;
         }
 
         //开始转发
@@ -231,6 +256,13 @@ namespace WeiboLotteryMachine.Win
 
             this.ForwardTimer.Interval = Convert.ToInt32(this.textBoxInterval.Text) * 60000;
             this.ForwardTimer.Enabled = true;
+
+            //记住云打码账号
+            Settings.Default.YunUserName = this.textBoxYdmUser.Text;
+            Settings.Default.YunPassword = this.textBoxYdmPassword.Text;
+            Settings.Default.Save();
+            this.textBoxYdmUser.Enabled = false;
+            this.textBoxYdmPassword.Enabled = false;
         }
         #endregion
     }

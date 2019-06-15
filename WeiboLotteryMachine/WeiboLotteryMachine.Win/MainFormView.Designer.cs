@@ -32,6 +32,9 @@
             System.Windows.Forms.Label label2;
             System.Windows.Forms.Label labelInterval;
             this.groupBoxSet = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.textBoxYdmPassword = new System.Windows.Forms.TextBox();
+            this.textBoxYdmUser = new System.Windows.Forms.TextBox();
             this.textBoxInterval = new System.Windows.Forms.TextBox();
             this.buttonStart = new System.Windows.Forms.Button();
             this.pictureBoxHeader = new System.Windows.Forms.PictureBox();
@@ -40,9 +43,6 @@
             this.textBoxPassword = new System.Windows.Forms.TextBox();
             this.textBoxUsername = new System.Windows.Forms.TextBox();
             this.richTextBoxOutput = new System.Windows.Forms.RichTextBox();
-            this.textBoxYdmUser = new System.Windows.Forms.TextBox();
-            this.textBoxYdmPassword = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             labelInterval = new System.Windows.Forms.Label();
@@ -101,6 +101,30 @@
             this.groupBoxSet.TabStop = false;
             this.groupBoxSet.Text = "未登录";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(332, 69);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(53, 12);
+            this.label3.TabIndex = 12;
+            this.label3.Text = "云打码：";
+            // 
+            // textBoxYdmPassword
+            // 
+            this.textBoxYdmPassword.Location = new System.Drawing.Point(497, 66);
+            this.textBoxYdmPassword.Name = "textBoxYdmPassword";
+            this.textBoxYdmPassword.PasswordChar = '*';
+            this.textBoxYdmPassword.Size = new System.Drawing.Size(100, 21);
+            this.textBoxYdmPassword.TabIndex = 11;
+            // 
+            // textBoxYdmUser
+            // 
+            this.textBoxYdmUser.Location = new System.Drawing.Point(391, 66);
+            this.textBoxYdmUser.Name = "textBoxYdmUser";
+            this.textBoxYdmUser.Size = new System.Drawing.Size(100, 21);
+            this.textBoxYdmUser.TabIndex = 10;
+            // 
             // textBoxInterval
             // 
             this.textBoxInterval.Enabled = false;
@@ -123,6 +147,7 @@
             // 
             // pictureBoxHeader
             // 
+            this.pictureBoxHeader.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.pictureBoxHeader.Location = new System.Drawing.Point(12, 25);
             this.pictureBoxHeader.Name = "pictureBoxHeader";
             this.pictureBoxHeader.Size = new System.Drawing.Size(70, 70);
@@ -180,30 +205,6 @@
             this.richTextBoxOutput.Size = new System.Drawing.Size(775, 310);
             this.richTextBoxOutput.TabIndex = 1;
             this.richTextBoxOutput.Text = "";
-            // 
-            // textBoxYdmUser
-            // 
-            this.textBoxYdmUser.Location = new System.Drawing.Point(391, 66);
-            this.textBoxYdmUser.Name = "textBoxYdmUser";
-            this.textBoxYdmUser.Size = new System.Drawing.Size(100, 21);
-            this.textBoxYdmUser.TabIndex = 10;
-            // 
-            // textBoxYdmPassword
-            // 
-            this.textBoxYdmPassword.Location = new System.Drawing.Point(497, 66);
-            this.textBoxYdmPassword.Name = "textBoxYdmPassword";
-            this.textBoxYdmPassword.PasswordChar = '*';
-            this.textBoxYdmPassword.Size = new System.Drawing.Size(100, 21);
-            this.textBoxYdmPassword.TabIndex = 11;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(332, 69);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(53, 12);
-            this.label3.TabIndex = 12;
-            this.label3.Text = "云打码：";
             // 
             // MainFormView
             // 
