@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.539
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeiboLotteryMachine.Win", "WeiboLotteryMachine.Win\WeiboLotteryMachine.Win.csproj", "{7078BE36-2610-4360-A578-18F58E0BF916}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeiboLotteryMachine.BLL", "WeiboLotteryMachine.BLL\WeiboLotteryMachine.BLL.csproj", "{5262CCEF-8037-4D6D-B2DF-D26D13E695C7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeiboLotteryMachine.Model", "WeiboLotteryMachine.Model\WeiboLotteryMachine.Model.csproj", "{C020758D-10AB-4872-91E3-2A77071C6005}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeiboLotteryMachine.WPF", "WeiboLotteryMachine.WPF\WeiboLotteryMachine.WPF.csproj", "{FF4212C7-123F-4E3E-959C-3859E2B87BC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{C020758D-10AB-4872-91E3-2A77071C6005}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C020758D-10AB-4872-91E3-2A77071C6005}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C020758D-10AB-4872-91E3-2A77071C6005}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF4212C7-123F-4E3E-959C-3859E2B87BC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF4212C7-123F-4E3E-959C-3859E2B87BC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF4212C7-123F-4E3E-959C-3859E2B87BC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF4212C7-123F-4E3E-959C-3859E2B87BC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
