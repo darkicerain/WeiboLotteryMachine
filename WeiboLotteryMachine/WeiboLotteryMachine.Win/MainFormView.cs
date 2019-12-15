@@ -79,13 +79,28 @@ namespace WeiboLotteryMachine.Win
         #endregion
 
         #region [运行相关]
+        List<Model.LotteryWeibo> Weibos = new List<Model.LotteryWeibo>();
         private void ForwardTimer_Tick(object sender, EventArgs e)
         {
-            List<Model.LotteryWeibo> weibos = BLL.Lottery.GetLotteryList();
-
-            if (weibos.Count != 0)
+            if (Weibos.Count <= 0)
             {
-                foreach (Model.LotteryWeibo lotteryWeibo in weibos)
+                this.Weibos = BLL.Lottery.GetLotteryList();
+            }
+
+            bool isForward = this.LotteryWeibo();
+
+            if (!isForward)
+            {
+                Weibos = BLL.Lottery.GetLotteryList();
+                this.LotteryWeibo();
+            }
+        }
+
+        private bool LotteryWeibo()
+        {
+            if (Weibos.Count != 0)
+            {
+                foreach (Model.LotteryWeibo lotteryWeibo in Weibos)
                 {
                     //防止重复转发、多人关注要求
                     if (lotteryWeibo.LinkedUsers.Count > 0 ||
@@ -93,32 +108,20 @@ namespace WeiboLotteryMachine.Win
                     {
                         continue;
                     }
-
-                    //Model.LotteryWeibo lotteryWeibo = weibos[0];
                     //点赞
                     BLL.Lottery.Like(this.User.Cookies, lotteryWeibo.Mid);
                     //关注
                     BLL.Lottery.Follow(this.User.Cookies, lotteryWeibo.OwnerUser.Uid, lotteryWeibo.OwnerUser.NickName);
-                    //TODO 多条件转发
-                    //foreach (Model.LotteryUser user in lotteryWeibo.LinkedUsers)
-                    //{
-                    //    BLL.Lottery.Follow(this.User.Cookies, user.Uid, user.NickName);
-                    //}
-                    //评论
-                    //BLL.Lottery.Comment(this.User.Cookies, lotteryWeibo.Mid, this.User.Uid, lotteryWeibo.OwnerUser.Uid, "吸欧气，请抽我！");
                     //转发
                     BLL.Lottery.Forward(this.User.Cookies, lotteryWeibo.Mid, this.User.Uid);
 
                     //记录数据
                     this.WriteOutputMessage("转发成功，被转用户：@" + lotteryWeibo.OwnerUser.NickName);
                     BLL.ForwardDb.InsertMid(lotteryWeibo.Mid);
-                    break;
+                    return true;
                 }
             }
-            else
-            {
-                this.WriteOutputMessage("获取转发列表失败");
-            }
+            return false;
         }
         #endregion
 
