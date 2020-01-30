@@ -5,22 +5,57 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WeiboLotteryMachine.WPF"
         mc:Ignorable="d"
-        Title="微博抽奖机" Height="450" Width="800"
+        Title="微博抽奖机" Height="650" Width="800" MaxWidth="800" ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen">
     <Window.DataContext>
         <Binding Path="Main" Source="{StaticResource Locator}"/>
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="140"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <GroupBox Header="{Binding NickName}" Margin="5"/>
-        <TextBlock Grid.Row="1" 
-                   Grid.RowSpan="4"
-                   Background="AliceBlue"/>
+        <GroupBox Header="{Binding NickName}" Margin="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.3*"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition Height="0.3*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.7*"/>
+                    <ColumnDefinition Width="0.4*"/>
+                    <ColumnDefinition Width="1.5*"/>
+                    <ColumnDefinition Width="0.8*"/>
+                    <ColumnDefinition Width="0.6*"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="0.8*"/>
+                </Grid.ColumnDefinitions>
+                <Image Source="{Binding Avatar}"
+                       Grid.RowSpan="4"
+                       Width="70"
+                       Height="70"
+                       Opacity="70"/>
+                <Label Content="账号：" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Label Content="密码：" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Width="120" Height="25" Text="{Binding UserName,UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Width="120" Height="25" Text="{Binding Password,UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Content="登录" Grid.Column="3" Grid.Row="1" Grid.RowSpan="2" Margin="10,15" Command="{Binding LoginCommand}" IsEnabled="{Binding CanLogin}"/>
+                <Label Content="时间间隔：" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Label Content="云打码：" Grid.Row="2" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Left"  Width="60" Height="25" Text="{Binding Interval}"/>
+                <TextBox Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" HorizontalAlignment="Left"  Width="100" Height="25" Text="{Binding YdmUserName}"/>
+                <TextBox Grid.Row="2" Grid.Column="6" VerticalAlignment="Center" HorizontalAlignment="Left"  Width="100" Height="25" Text="{Binding YdmPassword}"/>
+                <Button Content="开始转发" Grid.Column="7" Grid.Row="1" Grid.RowSpan="2" Margin="10,15" Command="{Binding StartCommand}" IsEnabled="{Binding IsLogin}"/>
+            </Grid>
+        </GroupBox>
+        <TextBox Grid.Row="1"
+                 Margin="10"
+                 Height="450"
+                 IsReadOnly="True"
+                 TextWrapping="WrapWithOverflow"  Text="{Binding OutPut}"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
     </Grid>
 </Window>

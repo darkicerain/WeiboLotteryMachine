@@ -9,17 +9,7 @@ namespace WeiboLotteryMachine.WPF.ViewModel
     public class MainViewModel : ViewModelBase
     {
         public ICommand StartCommand { get; private set; }
-        public ICommand StopCommand { get; private set; }
         public ICommand LoginCommand { get; private set; }
-        /// <summary>
-        /// Initializes a new instance of the MainViewModel class.
-        /// </summary>
-        public MainViewModel()
-        {
-            this.StartCommand = new RelayCommand(() => ExecuteStartCommand());
-            this.StartCommand = new RelayCommand(() => ExecuteStopCommand());
-            this.LoginCommand = new RelayCommand(() => ExecuteLoginCommand());
-        }
 
         private string nickName;
         /// <summary>
@@ -183,19 +173,54 @@ namespace WeiboLotteryMachine.WPF.ViewModel
             }
         }
 
+        private string startStatus = "开始转发";
+        /// <summary>
+        /// 开始按钮状态文本
+        /// </summary>
+        public string StartStatus
+        {
+            get { return startStatus; }
+            set
+            {
+                startStatus = value;
+                this.RaisePropertyChanged(nameof(StartStatus), value);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the MainViewModel class.
+        /// </summary>
+        public MainViewModel()
+        {
+            this.StartCommand = new RelayCommand(() => ExecuteStartCommand());
+            this.LoginCommand = new RelayCommand(() => ExecuteLoginCommand());
+        }
 
         private void ExecuteStartCommand()
         {
-            
-        }
-        private void ExecuteStopCommand()
-        {
-            
+            if (this.StartStatus.Equals("开始转发"))
+            {
+                this.StartStatus = "停止转发";
+                this.setOutPut("开始运行");
+            }
+            else
+            {
+                this.StartStatus = "开始转发";
+                this.setOutPut("停止运行");
+            }
         }
 
         private void ExecuteLoginCommand()
         {
-            
+            this.IsLogin = true;
+        }
+
+        private void setOutPut(string message)
+        {
+            this.OutPut += DateTime.Now.ToString("MM-dd hh:mm:ss");
+            this.OutPut += "\n";
+            this.OutPut += message;
+            this.OutPut += "\n";
         }
     }
 }
