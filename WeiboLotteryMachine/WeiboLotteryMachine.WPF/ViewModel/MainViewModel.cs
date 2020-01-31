@@ -2,15 +2,21 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
 using System.Drawing;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using WeiboLotteryMachine.WPF.View;
 
 namespace WeiboLotteryMachine.WPF.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
+        private Model.User User;
+
         public ICommand StartCommand { get; private set; }
         public ICommand LoginCommand { get; private set; }
 
+        #region [Properties]
         private string nickName;
         /// <summary>
         /// 昵称
@@ -50,11 +56,11 @@ namespace WeiboLotteryMachine.WPF.ViewModel
             }
         }
 
-        private Image avatar;
+        private BitmapImage avatar;
         /// <summary>
         /// 头像
         /// </summary>
-        public Image Avatar
+        public BitmapImage Avatar
         {
             get 
             { 
@@ -186,6 +192,7 @@ namespace WeiboLotteryMachine.WPF.ViewModel
                 this.RaisePropertyChanged(nameof(StartStatus), value);
             }
         }
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
@@ -201,26 +208,81 @@ namespace WeiboLotteryMachine.WPF.ViewModel
             if (this.StartStatus.Equals("开始转发"))
             {
                 this.StartStatus = "停止转发";
-                this.setOutPut("开始运行");
+                this.WriteOutputMessage("开始运行");
             }
             else
             {
                 this.StartStatus = "开始转发";
-                this.setOutPut("停止运行");
+                this.WriteOutputMessage("停止运行");
             }
         }
 
         private void ExecuteLoginCommand()
         {
-            this.IsLogin = true;
+            Model.User user = BLL.Login.PrepareLogin(this.UserName, this.Password);
+            string result = BLL.Login.StartLogin(user);
+            if (result.Equals("0"))
+            {
+                if (user.NickName == null)
+                {
+                    this.WriteOutputMessage("账号信息获取失败");
+                }
+                else if (user.NickName.IndexOf("请先验证身份") > -1)
+                {
+                    this.WriteOutputMessage("账号被锁，需解锁后才能继续登录");
+                    MessageBox.Show("账号被锁，需解锁后才能继续登录", "提示");
+                }
+                else
+                {
+                    this.LoginSuccessful(user);
+                }
+            }
+            else if (result.Equals("2070") || result.Equals("4096") || result.Equals("4049"))
+            {
+                do
+                {
+                    CheckCodeView checkCodeView = new CheckCodeView();
+                    ((CheckCodeViewModel)checkCodeView.DataContext).CheckCode = BLL.Login.GetCodeBitmapImage(user);
+                    checkCodeView.ShowDialog();
+                    if (String.IsNullOrEmpty(((CheckCodeViewModel)checkCodeView.DataContext).CodeString))
+                    {
+                        this.WriteOutputMessage("退出登录");
+                        return;
+                    }
+                    else
+                    {
+                        result = BLL.Login.StartLogin(user, ((CheckCodeViewModel)checkCodeView.DataContext).CodeString);
+                    }
+                } while (result.Equals(""));
+                this.LoginSuccessful(user);
+            }
+            else if (result.Equals("101&"))
+            {
+                //密码错误
+                this.WriteOutputMessage("登录失败，账号或密码错误");
+                MessageBox.Show("账号或密码错误！", "提示");
+            }
+            else
+            {
+                this.WriteOutputMessage("登录失败，未知错误信息");
+                MessageBox.Show("未知错误！请关闭登录保护后重试！", "提示");
+            }
         }
 
-        private void setOutPut(string message)
+        private void WriteOutputMessage(string message)
         {
             this.OutPut += DateTime.Now.ToString("MM-dd hh:mm:ss");
             this.OutPut += "\n";
             this.OutPut += message;
             this.OutPut += "\n";
+        }
+
+        private void LoginSuccessful(Model.User user)
+        {
+            this.User = user;
+            this.IsLogin = true;
+            this.Avatar = new BitmapImage(new Uri(user.AvatarUrl));
+            this.WriteOutputMessage("登录成功");
         }
     }
 }

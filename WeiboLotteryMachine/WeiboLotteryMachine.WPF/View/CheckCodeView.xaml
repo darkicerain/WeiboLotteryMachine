@@ -6,15 +6,16 @@
         xmlns:local="clr-namespace:WeiboLotteryMachine.WPF"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="验证码" Height="180" Width="150">
+        WindowStartupLocation="CenterScreen"
+        Title="验证码" Height="200" Width="160">
     <Window.DataContext>
         <Binding Source="{StaticResource Locator}" Path="CheckCode"/>
     </Window.DataContext>
     <Grid>
         <StackPanel>
-            <Image Margin="15" Height="45" Width="106" Source="{Binding CheckCode}"/>
-            <TextBox Width="106" Height="25" VerticalContentAlignment="Center" Text="{Binding CodeString}"/>
-            <Button Margin="15" Width="106" Height="30" Content="确定" IsEnabled="{Binding OkEnabled}" Command="{Binding OkCommand}"/>
+            <Image Margin="15" Height="45" Width="106" Source="{Binding CheckCode}" Stretch="Fill"/>
+            <TextBox Width="106" Height="25" VerticalContentAlignment="Center" Text="{Binding CodeString,UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Margin="15" Height="30" Content="确定" IsEnabled="{Binding OkEnabled}" Command="{Binding OkCommand}" Click="Button_Click"/>
         </StackPanel>
     </Grid>
 </Window>

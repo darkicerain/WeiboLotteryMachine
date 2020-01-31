@@ -30,6 +30,10 @@ namespace WeiboLotteryMachine.Model
         /// </summary>
         public Image HeaderPicture { get; set; }
         /// <summary>
+        /// 头像路径
+        /// </summary>
+        public string AvatarUrl { get; set; }
+        /// <summary>
         /// Cookies
         /// </summary>
         public CookieContainer Cookies { get; set; }//Cookies

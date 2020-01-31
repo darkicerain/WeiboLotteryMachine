@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
+using System.Windows.Media.Imaging;
 using WeiboLotteryMachine.DAL;
 
 namespace WeiboLotteryMachine.BLL
@@ -59,6 +60,28 @@ namespace WeiboLotteryMachine.BLL
             //获取验证码
             url = "http://login.sina.com.cn/cgi/pin.php?p=" + user.LoginPara.pcid;
             return HttpHelper.GetImage(url);
+        }
+
+        public static BitmapImage GetCodeBitmapImage(Model.User user)
+        {
+            //获取登录参数
+            string url = "http://login.sina.com.cn/sso/prelogin.php?entry=weibo&callback=sinaSSOController.preloginCallBack&su="
+            + user.LoginPara.su + "&rsakt=mod&checkpin=1&client=ssologin.js(v1.4.18)";
+            string content = HttpHelper.Get(url);
+            int pos;
+            pos = content.IndexOf("servertime");
+            user.LoginPara.servertime = content.Substring(pos + 12, 10);
+            pos = content.IndexOf("pcid");
+            user.LoginPara.pcid = content.Substring(pos + 7, 39);
+            pos = content.IndexOf("nonce");
+            user.LoginPara.nonce = content.Substring(pos + 8, 6);
+            pos = content.IndexOf("showpin");
+            user.LoginPara.showpin = content.Substring(pos + 9, 1);
+
+            user.LoginPara.IsForcedPin = true;
+            //获取验证码
+            url = "http://login.sina.com.cn/cgi/pin.php?p=" + user.LoginPara.pcid;
+            return new BitmapImage(new Uri(url));
         }
 
         /// <summary>
@@ -152,7 +175,8 @@ namespace WeiboLotteryMachine.BLL
                 userHomePageTxt = userHomePageTxt.Substring(indexStart);
                 string url = userHomePageTxt.Substring(0, userHomePageTxt.IndexOf("';"));
                 WebClient wc = new WebClient();
-                user.HeaderPicture = Image.FromStream(wc.OpenRead("http:" + url));
+                user.HeaderPicture = Image.FromStream(wc.OpenRead(url));
+                user.AvatarUrl = url;
             }
             catch (Exception ex)
             {

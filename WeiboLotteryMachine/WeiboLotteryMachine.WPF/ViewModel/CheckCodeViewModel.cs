@@ -7,17 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace WeiboLotteryMachine.WPF.ViewModel
 {
     public class CheckCodeViewModel: ViewModelBase
     {
         #region [Properties]
-        private Image checkCode;
+        private BitmapImage checkCode;
         /// <summary>
         /// 验证码图片
         /// </summary>
-        public Image CheckCode
+        public BitmapImage CheckCode
         {
             get { return checkCode; }
             set
