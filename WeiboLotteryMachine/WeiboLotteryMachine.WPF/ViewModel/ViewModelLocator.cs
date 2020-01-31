@@ -17,6 +17,7 @@ namespace WeiboLotteryMachine.WPF.ViewModel
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<CheckCodeViewModel>();
         }
 
         public MainViewModel Main
@@ -24,6 +25,14 @@ namespace WeiboLotteryMachine.WPF.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<MainViewModel>();
+            }
+        }
+
+        public CheckCodeViewModel CheckCode
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<CheckCodeViewModel>();
             }
         }
         
