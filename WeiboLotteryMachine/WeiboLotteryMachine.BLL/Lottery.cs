@@ -14,11 +14,11 @@ namespace WeiboLotteryMachine.BLL
         /// 获取抽奖微博列表
         /// </summary>
         /// <returns></returns>
-        public static List<Model.LotteryWeibo> GetLotteryList()
+        public static List<Model.LotteryWeibo> GetLotteryList(CookieContainer cookie)
         {
             List<Model.LotteryWeibo> lotteryWeibos = new List<Model.LotteryWeibo>(); 
-            string url = "https://s.weibo.com/weibo/%25E5%25BE%25AE%25E5%258D%259A%25E6%258A%25BD%25E5%25A5%2596%25E5%25B9%25B3%25E5%258F%25B0?topnav=1&wvr=6&b=1#_loginLayer_1560013502676";
-            string result = DAL.HttpHelper.Get(url);
+            string url = "https://s.weibo.com/weibo/%25E5%25BE%25AE%25E5%258D%259A%25E6%258A%25BD%25E5%25A5%2596%25E5%25B9%25B3%25E5%258F%25B0?topnav=1&wvr=6&b=1";
+            string result = DAL.HttpHelper.Get(url, cookie, true);
 
             if (!result.Equals(""))
             {
@@ -55,10 +55,18 @@ namespace WeiboLotteryMachine.BLL
                         regexStr = "@(.)*?</a>";
                         Match nick = Regex.Match(user.Value, regexStr);
                         lotteryUser.NickName = nick.Value.Replace("@", "").Replace("</a>", "");
+                        if (String.IsNullOrEmpty(lotteryUser.NickName))
+                        {
+                            continue;
+                        }
                         regexStr = "href=(.)*? target";
                         Match friendUrl = Regex.Match(user.Value, regexStr);
-                        lotteryUser.Uid = GetUidFromUrl(friendUrl.Value.Replace("href=\"", "").Replace("\" target", ""));
-                        lotteryWeibo.LinkedUsers.Add(lotteryUser);
+                        lotteryUser.Uid = GetUidFromUrl(cookie, friendUrl.Value.Replace("href=\"", "").Replace("\" target", ""));
+                        if (!String.IsNullOrWhiteSpace(lotteryUser.NickName) &&
+                            !String.IsNullOrWhiteSpace(lotteryUser.Uid))
+                        {
+                            lotteryWeibo.LinkedUsers.Add(lotteryUser);
+                        }
                     }
                     lotteryWeibos.Add(lotteryWeibo);
                 }
@@ -133,11 +141,17 @@ namespace WeiboLotteryMachine.BLL
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        private static string GetUidFromUrl(string url)
+        private static string GetUidFromUrl(CookieContainer cookie, string url)
         {
-            string result = HttpHelper.Get("http:" + url,true);
+            string result = HttpHelper.Get("http:" + url, cookie, true);
+            if (String.IsNullOrEmpty(result))
+            {
+                return "";
+            }
             //TODO 获取uid
-            return "";
+            int indexStart = result.IndexOf("$CONFIG['oid']='") + "$CONFIG['oid']='".Length;
+            result = result.Substring(indexStart);
+            return result.Substring(0, result.IndexOf("';"));
         }
         #endregion
     }

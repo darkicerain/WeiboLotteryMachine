@@ -1,7 +1,9 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -12,6 +14,8 @@ namespace WeiboLotteryMachine.WPF.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private Model.User User;
+        private Timer forwardTimer;
+        private List<Model.LotteryWeibo> Weibos = new List<Model.LotteryWeibo>();
 
         public ICommand StartCommand { get; private set; }
         public ICommand LoginCommand { get; private set; }
@@ -201,6 +205,8 @@ namespace WeiboLotteryMachine.WPF.ViewModel
         {
             this.StartCommand = new RelayCommand(() => ExecuteStartCommand());
             this.LoginCommand = new RelayCommand(() => ExecuteLoginCommand());
+
+            forwardTimer = new Timer(this.forwardCallback, null, Timeout.Infinite, this.Interval * 1000 * 60);
         }
 
         private void ExecuteStartCommand()
@@ -209,11 +215,13 @@ namespace WeiboLotteryMachine.WPF.ViewModel
             {
                 this.StartStatus = "停止转发";
                 this.WriteOutputMessage("开始运行");
+                this.forwardTimer.Change(0, this.Interval * 1000 * 60);
             }
             else
             {
                 this.StartStatus = "开始转发";
                 this.WriteOutputMessage("停止运行");
+                this.forwardTimer.Change(Timeout.Infinite, this.Interval * 1000 * 60);
             }
         }
 
@@ -282,7 +290,51 @@ namespace WeiboLotteryMachine.WPF.ViewModel
             this.User = user;
             this.IsLogin = true;
             this.Avatar = new BitmapImage(new Uri(user.AvatarUrl));
+            this.NickName = user.NickName;
             this.WriteOutputMessage("登录成功");
+        }
+
+        private void forwardCallback(object state)
+        {
+            if (Weibos.Count <= 1)
+            {
+                this.Weibos = BLL.Lottery.GetLotteryList(this.User.Cookies);
+            }
+            this.LotteryWeibo();
+        }
+
+        private bool LotteryWeibo()
+        {
+            if (Weibos.Count != 0)
+            {
+                foreach (Model.LotteryWeibo lotteryWeibo in Weibos)
+                {
+                    //防止重复转发
+                    if (BLL.ForwardDb.IsForwarded(lotteryWeibo.Mid))
+                    {
+                        continue;
+                    }
+                    //点赞
+                    BLL.Lottery.Like(this.User.Cookies, lotteryWeibo.Mid);
+                    //关注
+                    BLL.Lottery.Follow(this.User.Cookies, lotteryWeibo.OwnerUser.Uid, lotteryWeibo.OwnerUser.NickName);
+                    //转发
+                    BLL.Lottery.Forward(this.User.Cookies, lotteryWeibo.Mid, this.User.Uid);
+                    //关注其他用户
+                    foreach (var user in lotteryWeibo.LinkedUsers)
+                    {
+                        BLL.Lottery.Follow(this.User.Cookies, user.Uid, user.NickName);
+                        this.WriteOutputMessage($"已关注@{user.NickName}");
+                    }
+
+                    //记录数据
+                    this.WriteOutputMessage("转发成功，被转用户：@" + lotteryWeibo.OwnerUser.NickName);
+                    BLL.ForwardDb.InsertMid(lotteryWeibo.Mid);
+                    this.Weibos.Remove(lotteryWeibo);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
