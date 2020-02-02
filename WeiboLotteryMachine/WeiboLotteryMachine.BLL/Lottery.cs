@@ -55,7 +55,7 @@ namespace WeiboLotteryMachine.BLL
                         regexStr = "@(.)*?</a>";
                         Match nick = Regex.Match(user.Value, regexStr);
                         lotteryUser.NickName = nick.Value.Replace("@", "").Replace("</a>", "");
-                        if (String.IsNullOrEmpty(lotteryUser.NickName))
+                        if (String.IsNullOrEmpty(lotteryUser.NickName) || lotteryUser.NickName.Equals(lotteryWeibo.OwnerUser.NickName))
                         {
                             continue;
                         }
@@ -148,7 +148,7 @@ namespace WeiboLotteryMachine.BLL
             {
                 return "";
             }
-            //TODO 获取uid
+
             int indexStart = result.IndexOf("$CONFIG['oid']='") + "$CONFIG['oid']='".Length;
             result = result.Substring(indexStart);
             return result.Substring(0, result.IndexOf("';"));

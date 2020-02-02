@@ -14,6 +14,8 @@
     <WarningLevel>4</WarningLevel>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,12 +48,21 @@
     <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.3.0.19026, Culture=neutral, PublicKeyToken=f46ff315b1088208, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net40\GalaSoft.MvvmLight.Extras.dll</HintPath>
     </Reference>
+    <Reference Include="Interop.MSScriptControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>..\WeiboLotteryMachine.Win\lib\Interop.MSScriptControl.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.111.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.111.0\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net40\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -72,14 +83,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="View\CheckCodeView.xaml.cs">
+    <Compile Include="Common\ScriptEngine.cs" />
+    <Compile Include="Common\TimeHelper.cs" />
+    <Compile Include="DataBase\ForwardDb.cs" />
+    <Compile Include="Models\LoginModel.cs" />
+    <Compile Include="Models\LoginUserModel.cs" />
+    <Compile Include="Models\LotteryWeiboModel.cs" />
+    <Compile Include="Views\CheckCodeView.xaml.cs">
       <DependentUpon>CheckCodeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\HttpHelper.cs" />
     <Compile Include="ViewModel\CheckCodeViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Page Include="View\CheckCodeView.xaml">
+    <Page Include="Views\CheckCodeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -125,18 +142,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WeiboLotteryMachine.BLL\WeiboLotteryMachine.BLL.csproj">
-      <Project>{5262ccef-8037-4d6d-b2df-d26d13e695c7}</Project>
-      <Name>WeiboLotteryMachine.BLL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WeiboLotteryMachine.DAL\WeiboLotteryMachine.DAL.csproj">
-      <Project>{dc8223df-fc31-4b9c-ad67-26b1cae052fd}</Project>
-      <Name>WeiboLotteryMachine.DAL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WeiboLotteryMachine.Model\WeiboLotteryMachine.Model.csproj">
-      <Project>{c020758d-10ab-4872-91e3-2a77071c6005}</Project>
-      <Name>WeiboLotteryMachine.Model</Name>
-    </ProjectReference>
+    <Resource Include="Images\avatar.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets'))" />
+  </Target>
 </Project>

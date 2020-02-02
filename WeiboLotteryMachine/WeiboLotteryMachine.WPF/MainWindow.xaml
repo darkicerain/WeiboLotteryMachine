@@ -33,11 +33,16 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="0.8*"/>
                 </Grid.ColumnDefinitions>
+                <Border Name="mask" Background="White" CornerRadius="7"/>
                 <Image Source="{Binding Avatar}"
                        Grid.RowSpan="4"
                        Width="70"
                        Height="70"
-                       Opacity="70"/>
+                       Opacity="70">
+                    <Image.Clip>
+                        <RectangleGeometry RadiusX="35" RadiusY="35" Rect="0,0,70,70"/>
+                    </Image.Clip>
+                </Image>
                 <Label Content="账号：" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <Label Content="密码：" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <TextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" Width="120" Height="25" Text="{Binding UserName,UpdateSourceTrigger=PropertyChanged}"/>
@@ -45,7 +50,10 @@
                 <Button Content="登录" Grid.Column="3" Grid.Row="1" Grid.RowSpan="2" Margin="10,15" Command="{Binding LoginCommand}" IsEnabled="{Binding CanLogin}"/>
                 <Label Content="时间间隔：" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <Label Content="云打码：" Grid.Row="2" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBox Grid.Row="1" Grid.Column="5" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left"  Width="60" Height="25" Text="{Binding Interval}"/>
+                <StackPanel Grid.Row="1" Grid.Column="5" Orientation="Horizontal">
+                    <TextBox VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left"  Width="60" Height="25" Text="{Binding Interval}"/>
+                    <TextBlock Margin="10,0" Text="分钟/次" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </StackPanel>
                 <TextBox Grid.Row="2" Grid.Column="5" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left"  Width="100" Height="25" Text="{Binding YdmUserName}"/>
                 <TextBox Grid.Row="2" Grid.Column="6" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left"  Width="100" Height="25" Text="{Binding YdmPassword}"/>
                 <Button Content="{Binding StartStatus}"  Grid.Column="7" Grid.Row="1" Grid.RowSpan="2" Margin="10,15" Command="{Binding StartCommand}" IsEnabled="{Binding IsLogin}"/>

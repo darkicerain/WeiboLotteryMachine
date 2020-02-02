@@ -84,14 +84,14 @@ namespace WeiboLotteryMachine.Win
         {
             if (Weibos.Count <= 0)
             {
-                this.Weibos = BLL.Lottery.GetLotteryList();
+                this.Weibos = BLL.Lottery.GetLotteryList(this.User.Cookies);
             }
 
             bool isForward = this.LotteryWeibo();
 
             if (!isForward)
             {
-                Weibos = BLL.Lottery.GetLotteryList();
+                Weibos = BLL.Lottery.GetLotteryList(this.User.Cookies);
                 this.LotteryWeibo();
             }
         }

@@ -7,15 +7,18 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using WeiboLotteryMachine.WPF.DataBase;
+using WeiboLotteryMachine.WPF.Models;
 using WeiboLotteryMachine.WPF.View;
+using WeiboLotteryMachine.WPF.Views;
 
 namespace WeiboLotteryMachine.WPF.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
-        private Model.User User;
+        private Login loginUser;
         private Timer forwardTimer;
-        private List<Model.LotteryWeibo> Weibos = new List<Model.LotteryWeibo>();
+        private List<LotteryWeibo> Weibos = new List<LotteryWeibo>();
 
         public ICommand StartCommand { get; private set; }
         public ICommand LoginCommand { get; private set; }
@@ -60,7 +63,7 @@ namespace WeiboLotteryMachine.WPF.ViewModel
             }
         }
 
-        private BitmapImage avatar;
+        private BitmapImage avatar = new BitmapImage(new Uri("pack://application:,,,/Images/avatar.jpg"));
         /// <summary>
         /// 头像
         /// </summary>
@@ -203,6 +206,8 @@ namespace WeiboLotteryMachine.WPF.ViewModel
         /// </summary>
         public MainViewModel()
         {
+            ForwardDb.InitDataBase();
+
             this.StartCommand = new RelayCommand(() => ExecuteStartCommand());
             this.LoginCommand = new RelayCommand(() => ExecuteLoginCommand());
 
@@ -227,22 +232,22 @@ namespace WeiboLotteryMachine.WPF.ViewModel
 
         private void ExecuteLoginCommand()
         {
-            Model.User user = BLL.Login.PrepareLogin(this.UserName, this.Password);
-            string result = BLL.Login.StartLogin(user);
+            this.loginUser = new Login(this.UserName, this.Password);
+            string result = this.loginUser.StartLogin();
             if (result.Equals("0"))
             {
-                if (user.NickName == null)
+                if (this.loginUser.User.NickName == null)
                 {
                     this.WriteOutputMessage("账号信息获取失败");
                 }
-                else if (user.NickName.IndexOf("请先验证身份") > -1)
+                else if (this.loginUser.User.NickName.IndexOf("请先验证身份") > -1)
                 {
                     this.WriteOutputMessage("账号被锁，需解锁后才能继续登录");
                     MessageBox.Show("账号被锁，需解锁后才能继续登录", "提示");
                 }
                 else
                 {
-                    this.LoginSuccessful(user);
+                    this.LoginSuccessful();
                 }
             }
             else if (result.Equals("2070") || result.Equals("4096") || result.Equals("4049"))
@@ -250,7 +255,7 @@ namespace WeiboLotteryMachine.WPF.ViewModel
                 do
                 {
                     CheckCodeView checkCodeView = new CheckCodeView();
-                    ((CheckCodeViewModel)checkCodeView.DataContext).CheckCode = BLL.Login.GetCodeBitmapImage(user);
+                    ((CheckCodeViewModel)checkCodeView.DataContext).CheckCode = this.loginUser.GetCodeBitmapImage();
                     checkCodeView.ShowDialog();
                     if (String.IsNullOrEmpty(((CheckCodeViewModel)checkCodeView.DataContext).CodeString))
                     {
@@ -259,10 +264,10 @@ namespace WeiboLotteryMachine.WPF.ViewModel
                     }
                     else
                     {
-                        result = BLL.Login.StartLogin(user, ((CheckCodeViewModel)checkCodeView.DataContext).CodeString);
+                        result = this.loginUser.StartLogin(((CheckCodeViewModel)checkCodeView.DataContext).CodeString);
                     }
                 } while (result.Equals(""));
-                this.LoginSuccessful(user);
+                this.LoginSuccessful();
             }
             else if (result.Equals("101&"))
             {
@@ -285,20 +290,27 @@ namespace WeiboLotteryMachine.WPF.ViewModel
             this.OutPut += "\n";
         }
 
-        private void LoginSuccessful(Model.User user)
+        private void LoginSuccessful()
         {
-            this.User = user;
-            this.IsLogin = true;
-            this.Avatar = new BitmapImage(new Uri(user.AvatarUrl));
-            this.NickName = user.NickName;
-            this.WriteOutputMessage("登录成功");
+            try
+            {
+                this.IsLogin = true;
+                this.Avatar = new BitmapImage(new Uri(this.loginUser.User.AvatarUrl));
+                this.NickName = this.loginUser.User.NickName;
+                this.WriteOutputMessage("登录成功");
+            }
+            catch (Exception ex)
+            {
+                this.WriteOutputMessage($"登录失败：{ex.Message}");
+                this.IsLogin = false;
+            }
         }
 
         private void forwardCallback(object state)
         {
             if (Weibos.Count <= 1)
             {
-                this.Weibos = BLL.Lottery.GetLotteryList(this.User.Cookies);
+                this.Weibos = this.loginUser.GetLotteryList();
             }
             this.LotteryWeibo();
         }
@@ -307,29 +319,30 @@ namespace WeiboLotteryMachine.WPF.ViewModel
         {
             if (Weibos.Count != 0)
             {
-                foreach (Model.LotteryWeibo lotteryWeibo in Weibos)
+                for (int i = Weibos.Count - 1; i >= 0; i--)
                 {
-                    //防止重复转发
-                    if (BLL.ForwardDb.IsForwarded(lotteryWeibo.Mid))
+                    var lotteryWeibo = Weibos[i];
+                    if (ForwardDb.IsForwarded(lotteryWeibo.Mid))
                     {
+                        this.Weibos.Remove(lotteryWeibo);
                         continue;
                     }
                     //点赞
-                    BLL.Lottery.Like(this.User.Cookies, lotteryWeibo.Mid);
+                    this.loginUser.Like(lotteryWeibo.Mid);
                     //关注
-                    BLL.Lottery.Follow(this.User.Cookies, lotteryWeibo.OwnerUser.Uid, lotteryWeibo.OwnerUser.NickName);
+                    this.loginUser.Follow(lotteryWeibo.OwnerUser.Uid, lotteryWeibo.OwnerUser.NickName);
                     //转发
-                    BLL.Lottery.Forward(this.User.Cookies, lotteryWeibo.Mid, this.User.Uid);
+                    this.loginUser.Forward(lotteryWeibo.Mid);
                     //关注其他用户
                     foreach (var user in lotteryWeibo.LinkedUsers)
                     {
-                        BLL.Lottery.Follow(this.User.Cookies, user.Uid, user.NickName);
+                        this.loginUser.Follow(user.Uid, user.NickName);
                         this.WriteOutputMessage($"已关注@{user.NickName}");
                     }
 
                     //记录数据
                     this.WriteOutputMessage("转发成功，被转用户：@" + lotteryWeibo.OwnerUser.NickName);
-                    BLL.ForwardDb.InsertMid(lotteryWeibo.Mid);
+                    ForwardDb.InsertMid(lotteryWeibo.Mid);
                     this.Weibos.Remove(lotteryWeibo);
                     return true;
                 }
