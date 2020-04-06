@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -18,6 +19,8 @@ namespace WeiboLotteryMachine.WPF.ViewModel
     {
         private Login loginUser;
         private Timer forwardTimer;
+        private Timer updateCookieTimer;
+        private int updateCookieCounter = 0;
         private List<LotteryWeibo> Weibos = new List<LotteryWeibo>();
 
         public ICommand StartCommand { get; private set; }
@@ -211,7 +214,8 @@ namespace WeiboLotteryMachine.WPF.ViewModel
             this.StartCommand = new RelayCommand(() => ExecuteStartCommand());
             this.LoginCommand = new RelayCommand(() => ExecuteLoginCommand());
 
-            forwardTimer = new Timer(this.forwardCallback, null, Timeout.Infinite, this.Interval * 1000 * 60);
+            this.forwardTimer = new Timer(this.forwardCallback, null, Timeout.Infinite, this.Interval * 1000 * 60);
+            this.updateCookieTimer = new Timer(this.updateCookieCallback, null, Timeout.Infinite, 60 * 1000 * 60);
         }
 
         private void ExecuteStartCommand()
@@ -315,6 +319,25 @@ namespace WeiboLotteryMachine.WPF.ViewModel
             this.LotteryWeibo();
         }
 
+        private void updateCookieCallback(object state)
+        {
+            this.updateCookieCounter++;
+            if (updateCookieCounter >= 22)
+            {
+                this.updateCookieCounter = 0;
+                this.loginUser = new Login(this.UserName, this.Password);
+                string result = this.loginUser.StartLogin();
+                if (result.Equals("0"))
+                {
+                    this.WriteOutputMessage("Cookies更新成功");
+                }
+                else
+                {
+                    //TODO 解码重登录
+                }
+            }
+        }
+
         private bool LotteryWeibo()
         {
             if (Weibos.Count != 0)
@@ -344,7 +367,7 @@ namespace WeiboLotteryMachine.WPF.ViewModel
                     this.WriteOutputMessage("转发成功，被转用户：@" + lotteryWeibo.OwnerUser.NickName);
                     ForwardDb.InsertMid(lotteryWeibo.Mid);
                     this.Weibos.Remove(lotteryWeibo);
-                    return true;
+                    return true; 
                 }
             }
             return false;

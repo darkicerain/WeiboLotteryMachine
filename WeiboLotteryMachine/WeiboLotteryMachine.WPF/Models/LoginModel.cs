@@ -92,7 +92,7 @@ namespace WeiboLotteryMachine.WPF.Models
                 //获取cookie
                 User.Cookies = new CookieContainer();
                 pos = content.IndexOf("location.replace");
-                string url = content.Substring(pos + 18, 276);//285->276 fuck!! 
+                string url = content.Substring(pos + 18, 276);
                 content = HttpHelper.Get(url, User.Cookies, false);
                 //获取头像、uid、昵称
                 GetUidNickNameAndSoOn();
@@ -101,8 +101,6 @@ namespace WeiboLotteryMachine.WPF.Models
             {
                 retcode = content.Substring(pos + 8, 4);
             }
-
-
             return retcode;
         }
 
@@ -168,6 +166,13 @@ namespace WeiboLotteryMachine.WPF.Models
                 }
             }
             return lotteryWeibos;
+        }
+
+        public bool UpdateCookies()
+        {
+
+
+            return false;
         }
 
         /// <summary>
